@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 const char WHITESPACE_LIST[] = {' ', '\t', '\n'};
-
+const char *OPERATOR_LIST[] = {"="}
 Lexer *init_lexer(char *src) 
 {
   Lexer *lexer = malloc(sizeof(Lexer *));
@@ -104,4 +104,29 @@ void skip_whitespace(Lexer *lexer)
   {
     eat(lexer);
   }
+}
+
+/////////////////////////////////
+// Tokenizer
+/////////////////////////////////
+
+
+bool is_keyword(char *word)
+{
+  
+}
+
+char *tokenize_identifier(Lexer *lexer)
+{
+
+}
+
+char *tokenize_int(Lexer *lexer)
+{
+
+}
+
+char *tokenize_operator(Lexer *lexer)
+{
+
 }
