@@ -257,6 +257,8 @@ TokenStream *tokenize(Lexer *lexer)
 
     token = tokenize_operator(lexer);
     if(token) {append_token(ts, init_token(token, BINOP)); continue;}
+
+    fprintf(stderr, "Error: Unrecognized token %c", lexer->src[lexer->head]);
   }
 
   return ts;
