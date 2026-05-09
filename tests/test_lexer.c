@@ -19,11 +19,6 @@ void test_tokenizer()
   char *src = "foo 1234 == FIELD";
   Lexer *lexer = init_lexer(src);
 
-  printf(tokenize_identifier(lexer));
-  skip_whitespace(lexer);
-  printf(tokenize_int(lexer));
-  skip_whitespace(lexer);
-  printf(tokenize_operator(lexer));
-  skip_whitespace(lexer);
-  printf(tokenize_keyword(lexer));
+  dump_tokenstream(tokenize(lexer));
+  
 }

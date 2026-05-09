@@ -153,24 +153,6 @@ char *tokenize_identifier(Lexer *lexer)
   while(isalnum(lexer->src[lexer->head]))
     append_char(iden, eat(lexer));
   
-  if(is_keyword(iden))
-    return NULL;
-  return iden;
-}
-
-char *tokenize_keyword(Lexer *lexer)
-{
-  char *iden = malloc(128);
-
-  if(!isalpha(lexer->src[lexer->head]))
-    return NULL;
-
-  while(isalnum(lexer->src[lexer->head]))
-    append_char(iden, eat(lexer));
-
-  if(!is_keyword(iden))
-    return NULL;
-
   return iden;
 }
 
@@ -180,6 +162,9 @@ char *tokenize_int(Lexer *lexer)
 
   while(isdigit(lexer->src[lexer->head]))
     append_char(iden, eat(lexer));
+
+  if(iden[0] == '\0')
+    return NULL;
   
   return iden;
 }
@@ -206,5 +191,81 @@ char *tokenize_operator(Lexer *lexer)
     if(strcmp(OPERATOR_LIST[i], iden) == 0)
       return iden;
 
+
   return NULL;
+}
+
+Token *init_token(char *val, TOKENTYPE type)
+{
+  Token *token = malloc(sizeof(Token));
+  if(!token)
+  {
+    fprintf(stderr, "Error: Failed to allocate memory for Token!");
+    return NULL;
+  }
+
+  token->val = val;
+  token->type = type;
+
+  return token;
+}
+
+TokenStream *init_ts()
+{
+  TokenStream *ts = malloc(sizeof(TokenStream));
+  if(!ts)
+  {
+    fprintf(stderr, "Error: Failed to allocate memory for TokenStream!");
+    return NULL;
+  }
+
+  ts->num_tokens = 0;
+  return ts;
+}
+
+void append_token(TokenStream* ts, Token *token)
+{
+  Token **tmp = realloc(ts->ts, (ts->num_tokens + 1)*sizeof(Token*));
+  
+  if(!tmp)
+  {
+    fprintf(stderr, "Error: Failed to allocate memory to append token!");
+  }
+
+  ts->ts = tmp;
+  ts->ts[ts->num_tokens] = token;
+  ts->num_tokens++;
+}
+
+TokenStream *tokenize(Lexer *lexer)
+{
+  TokenStream *ts = init_ts();
+  while(lexer->head < lexer->len)
+  {
+    skip_whitespace(lexer);
+    char *token = tokenize_identifier(lexer);
+    if(token) {
+      if(is_keyword(token))
+        append_token(ts, init_token(token, KEYWORD));
+      else
+        append_token(ts, init_token(token, IDENTIFIER));
+      continue;
+    }
+
+    token = tokenize_int(lexer);
+    if(token) {append_token(ts, init_token(token, INT)); continue;}
+
+    token = tokenize_operator(lexer);
+    if(token) {append_token(ts, init_token(token, BINOP)); continue;}
+  }
+
+  return ts;
+}
+
+void dump_tokenstream(TokenStream *ts)
+{
+  for(int i = 0; i < ts->num_tokens; i++)
+  {
+    printf("Token %i: %s\n", i, ts->ts[i]->val);
+  }
 }
