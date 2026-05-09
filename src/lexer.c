@@ -3,9 +3,25 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h>
+
+#define NUM_OPERATORS 10
+#define NUM_KEYWORDS 7
 
 const char WHITESPACE_LIST[] = {' ', '\t', '\n'};
-const char *OPERATOR_LIST[] = {"="}
+const char *OPERATOR_LIST[] = {"=", "==", "-", "+", "*", "/", ">", "<", ">=", "<="};
+const char OPERATOR_CHARS[] = {'=', '>', '<', '-', '+', '*', '/'};
+
+const char *KEYWORDS[] = {
+  "MODULE",
+  "FIELD",
+  "DEFAULT",
+  "MACRO",
+  "IF",
+  "ELIF",
+  "ELSE"
+};
+
 Lexer *init_lexer(char *src) 
 {
   Lexer *lexer = malloc(sizeof(Lexer *));
@@ -110,23 +126,85 @@ void skip_whitespace(Lexer *lexer)
 // Tokenizer
 /////////////////////////////////
 
+void append_char(char *str, char c)
+{
+  int len = strlen(str);
+  str[len] = c;
+  str[len+1] = '\0';
+}
 
 bool is_keyword(char *word)
 {
-  
+  for(int i = 0; i < NUM_KEYWORDS; i++)
+  {
+    if(strcmp(KEYWORDS[i], word) == 0)
+      return true;
+  }
+  return false;
 }
 
 char *tokenize_identifier(Lexer *lexer)
-{
+{ 
+  char *iden = malloc(128);
 
+  if(!isalpha(lexer->src[lexer->head]))
+    return NULL;
+
+  while(isalnum(lexer->src[lexer->head]))
+    append_char(iden, eat(lexer));
+  
+  if(is_keyword(iden))
+    return NULL;
+  return iden;
+}
+
+char *tokenize_keyword(Lexer *lexer)
+{
+  char *iden = malloc(128);
+
+  if(!isalpha(lexer->src[lexer->head]))
+    return NULL;
+
+  while(isalnum(lexer->src[lexer->head]))
+    append_char(iden, eat(lexer));
+
+  if(!is_keyword(iden))
+    return NULL;
+
+  return iden;
 }
 
 char *tokenize_int(Lexer *lexer)
 {
+  char *iden = malloc(128);
 
+  while(isdigit(lexer->src[lexer->head]))
+    append_char(iden, eat(lexer));
+  
+  return iden;
+}
+
+bool is_operator_char(char c)
+{
+  for(int i = 0; i < sizeof(OPERATOR_CHARS)/sizeof(char); i++)
+  {
+    if(c == OPERATOR_CHARS[i])
+      return true;
+  }
+
+  return false;
 }
 
 char *tokenize_operator(Lexer *lexer)
 {
+  char *iden = malloc(128);
 
+  while(is_operator_char(lexer->src[lexer->head]))
+    append_char(iden, eat(lexer));
+
+  for(int i = 0; i < NUM_OPERATORS; i++)
+    if(strcmp(OPERATOR_LIST[i], iden) == 0)
+      return iden;
+
+  return NULL;
 }

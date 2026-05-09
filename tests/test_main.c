@@ -6,7 +6,7 @@
 
 int main()
 {
-  test_lexer();
+  test_tokenizer();
   return 0;
 }
 
