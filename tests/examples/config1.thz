@@ -1,0 +1,22 @@
+ENUM SIZE {
+  small = 0;
+  medium = 1;
+  large = 2;
+  really_really_big = 3;
+  gigantic = 4;
+}
+
+MODULE shark
+{
+  // by default, all modules have an ENABLED field, which is automatically a macro
+  INT FIELD num_fins DEFAULT 1000;
+  SIZE FIELD spiracle DEFAULT really_really_big;
+
+  MACRO num_fins, spiracle
+}
+
+MODULE dont_shark
+{
+  // Forces a field (ENABLED) to hold a certain value (true)
+  FORCE ENABLED true
+}

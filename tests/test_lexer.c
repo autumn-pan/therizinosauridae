@@ -20,5 +20,4 @@ void test_tokenizer()
   Lexer *lexer = init_lexer(src);
 
   dump_tokenstream(tokenize(lexer));
-  
 }
