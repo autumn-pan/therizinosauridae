@@ -1,3 +1,6 @@
+#ifndef AST_H
+#define AST_H
+
 #include <stddef.h>
 
 typedef enum {
@@ -16,3 +19,8 @@ typedef struct node {
   char *value;
   NodeType type;
 } ASTNode;
+
+ASTNode *init_ast(char *value, NodeType type);
+void ast_append(ASTNode *parent, ASTNode *child);
+
+#endif // AST_H

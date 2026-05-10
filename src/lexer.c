@@ -8,7 +8,7 @@
 #define NUM_OPERATORS 10
 #define NUM_KEYWORDS 7
 
-const char WHITESPACE_LIST[] = {' ', '\t', '\n'};
+const char WHITESPACE_LIST[] = {' ', '\t'};
 const char *OPERATOR_LIST[] = {"=", "==", "-", "+", "*", "/", ">", "<", ">=", "<="};
 const char OPERATOR_CHARS[] = {'=', '>', '<', '-', '+', '*', '/'};
 
@@ -225,15 +225,15 @@ TokenStream *init_ts()
 
 void append_token(TokenStream* ts, Token *token)
 {
-  Token **tmp = realloc(ts->ts, (ts->num_tokens + 1)*sizeof(Token*));
+  Token **tmp = realloc(ts->list, (ts->num_tokens + 1)*sizeof(Token*));
   
   if(!tmp)
   {
     fprintf(stderr, "Error: Failed to allocate memory to append token!");
   }
 
-  ts->ts = tmp;
-  ts->ts[ts->num_tokens] = token;
+  ts->list = tmp;
+  ts->list[ts->num_tokens] = token;
   ts->num_tokens++;
 }
 
@@ -242,6 +242,7 @@ TokenStream *tokenize(Lexer *lexer)
   TokenStream *ts = init_ts();
   while(lexer->head < lexer->len)
   {
+    // Parse primary tokens
     skip_whitespace(lexer);
     char *token = tokenize_identifier(lexer);
     if(token) {
@@ -258,7 +259,29 @@ TokenStream *tokenize(Lexer *lexer)
     token = tokenize_operator(lexer);
     if(token) {append_token(ts, init_token(token, BINOP)); continue;}
 
-    fprintf(stderr, "Error: Unrecognized token %c", lexer->src[lexer->head]);
+    // Parse misc tokens
+    switch(lexer->src[lexer->head]) 
+    {
+      case '\n':  append_token(ts, init_token("\n", EOL)); 
+                  eat(lexer); 
+                  break;
+      case '{': append_token(ts, init_token("{", LEFT_BRACE));
+                eat(lexer); 
+                break;
+      case '}': append_token(ts, init_token("}", RIGHT_BRACE));
+                eat(lexer); 
+                break;
+      case '(': append_token(ts, init_token("(", LEFT_PAREN));
+                eat(lexer); 
+                break;
+      case ')': append_token(ts, init_token(")", RIGHT_PAREN));                 
+                eat(lexer); 
+                break;
+      default: fprintf(stderr, "Error: Unrecognized token: %c\n", 
+                       lexer->src[lexer->head]);
+                exit(EXIT_FAILURE);
+
+    }
   }
 
   return ts;
@@ -268,6 +291,6 @@ void dump_tokenstream(TokenStream *ts)
 {
   for(int i = 0; i < ts->num_tokens; i++)
   {
-    printf("Token %i: %s\n", i, ts->ts[i]->val);
+    printf("Token %i: %s\n", i, ts->list[i]->val);
   }
 }

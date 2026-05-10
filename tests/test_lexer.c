@@ -16,7 +16,7 @@ void test_lexer()
 
 void test_tokenizer()
 {
-  char *src = "foo 1234 == FIELD";
+  char *src = "foo 1234 == FIELD \n (){}";
   Lexer *lexer = init_lexer(src);
 
   dump_tokenstream(tokenize(lexer));

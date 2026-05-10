@@ -1,3 +1,6 @@
+#ifndef LEXER_H
+#define LEXER_H
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -8,6 +11,8 @@ typedef enum {
   RIGHT_PAREN, // )
   LEFT_BRACE,  // {
   RIGHT_BRACE, // }
+
+  EOL, // \n
 
   BINOP, // Binary Operator
   UNOP,  // Unary Operator
@@ -31,7 +36,7 @@ typedef struct {
 } Token;
 
 typedef struct {
-  Token **ts;
+  Token **list;
   size_t num_tokens;
 } TokenStream;
 
@@ -48,3 +53,5 @@ char *tokenize_keyword(Lexer *lexer);
 
 TokenStream *tokenize(Lexer *lexer);
 void dump_tokenstream(TokenStream *ts);
+
+#endif // LEXER_H
