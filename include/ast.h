@@ -4,13 +4,14 @@
 #include <stddef.h>
 
 typedef enum {
-  PROJECT_ROOT,
-  BLOCK,
-  FIELD,
-  OPERATOR,
-  VAR_DECL,
-  IDENTIFIER,
-  MACRO
+  AST_PROJECT_ROOT,
+  AST_BLOCK,
+  AST_FIELD,
+  AST_OPERATOR,
+  AST_VAR_DECL,
+  AST_IDENTIFIER,
+  AST_MACRO,
+  AST_MODULE
 } NodeType;
 
 typedef struct node {

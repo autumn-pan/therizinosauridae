@@ -220,13 +220,20 @@ TokenStream *init_ts()
   }
 
   ts->num_tokens = 0;
+  ts->list = NULL;
+  
   return ts;
 }
 
 void append_token(TokenStream* ts, Token *token)
 {
-  Token **tmp = realloc(ts->list, (ts->num_tokens + 1)*sizeof(Token*));
-  
+  Token **tmp;
+
+  if(ts->list)
+    tmp = realloc(ts->list, (ts->num_tokens + 1)*sizeof(Token*));
+  else
+    tmp = malloc((ts->num_tokens + 1)*sizeof(Token*));
+
   if(!tmp)
   {
     fprintf(stderr, "Error: Failed to allocate memory to append token!");
